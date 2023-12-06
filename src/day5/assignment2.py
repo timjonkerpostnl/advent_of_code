@@ -8,7 +8,6 @@ def get_seeds(stripped_line):
 
 
 def find_minimum_location(maps, seed_ranges):
-    locations = []
     input_ranges = seed_ranges
     for garden_map, lookup_dict in maps.items():
         new_ranges = create_ranges(input_ranges, lookup_dict)
@@ -54,7 +53,6 @@ def create_ranges(input_ranges, lookup_dict):
     return new_ranges
 
 
-
 def process_file(file_name: str) -> int:
     with open(file_name) as f:
         map_name = None
@@ -69,8 +67,6 @@ def process_file(file_name: str) -> int:
             elif stripped_line != "":
                 destination_start, source_start, length = stripped_line.split(" ")
                 destination_start, source_start, length = int(destination_start), int(source_start), int(length)
-                # for i, j in zip(range(source_start, source_start + length), range(destination_start, destination_start + length)):
-                #     maps[map_name][i] = j
                 maps[map_name][range(source_start, source_start + length)] = range(destination_start, destination_start + length)
 
         minimum_location = find_minimum_location(maps, seeds)

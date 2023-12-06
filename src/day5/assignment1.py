@@ -16,8 +16,6 @@ def process_file(file_name: str) -> int:
             elif stripped_line != "":
                 destination_start, source_start, length = stripped_line.split(" ")
                 destination_start, source_start, length = int(destination_start), int(source_start), int(length)
-                # for i, j in zip(range(source_start, source_start + length), range(destination_start, destination_start + length)):
-                #     maps[map_name][i] = j
                 maps[map_name][(source_start, source_start + length)] = destination_start
 
         minimum_location = find_minimum_location(maps, seeds)
@@ -30,7 +28,6 @@ def find_minimum_location(maps, seeds):
     for seed in seeds:
         lookup_num = seed
         for garden_map, lookup_dict in maps.items():
-            # lookup_num = lookup_dict.get(lookup_num, lookup_num)
             for (source_start, source_end), destination_start in lookup_dict.items():
                 if source_start <= lookup_num < source_end:
                     lookup_num = destination_start + lookup_num - source_start
