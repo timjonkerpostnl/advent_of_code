@@ -10,7 +10,6 @@ def extrapolate_backward(sequences: List[List[int]]):
     value_to_append = 0
     for sequence in sequences[::-1]:
         value_to_append = sequence[0] - value_to_append
-        sequence.insert(0, value_to_append)
     return value_to_append
 
 

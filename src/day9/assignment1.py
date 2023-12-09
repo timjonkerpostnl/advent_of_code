@@ -11,7 +11,6 @@ def extrapolate(sequences: List[List[int]]) -> int:
     value_to_append = 0
     for sequence in sequences[::-1]:
         value_to_append = sequence[-1] + value_to_append
-        sequence.append(value_to_append)
     return value_to_append
 
 
