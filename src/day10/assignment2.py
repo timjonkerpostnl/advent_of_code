@@ -30,10 +30,6 @@ def process_file(file_name: str) -> int:
 
     # plt.show()
 
-
-    # nx.draw(g, pos={n: (n[0], len(maze[0]) - n[1]) for n in g.nodes}, with_labels=True)
-    # plt.show()
-
     return tiles_covered
 
 
