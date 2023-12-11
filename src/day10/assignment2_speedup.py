@@ -11,7 +11,11 @@ from tqdm import tqdm
 from src.day10.assignment1 import construct_maze, find_cylce
 
 
-def process_file(file_name: str) -> int:
+def node_on_boundary(node: Tuple[int, int], maze_size: Tuple[int, int]) -> bool:
+    return node[0] == 0 or node[0] == maze_size[0] - 1 or node[1] == 0 or node[1] == maze_size[1] - 1
+
+
+def process_file(file_name: str, plots: bool = False) -> int:
     tiles_covered = 0
     maze = construct_maze(file_name)
     cycle, g = find_cylce(maze)
@@ -31,18 +35,21 @@ def process_file(file_name: str) -> int:
     components = list(nx.connected_components(subgraph))
     polygon = Polygon([[corner[0], corner[1]] for edge in cycle for corner in edge])
 
-    # shapely.plotting.plot_polygon(polygon, color="b")
+    if plots:
+        shapely.plotting.plot_polygon(polygon, color="b")
 
     for component in tqdm(components):
-        if Point(next(iter(component))).within(polygon):
+        if all(not node_on_boundary(node, (len(maze[0]), len(maze))) for node in component) and Point(next(iter(component))).within(polygon):
             tiles_covered += len(component)
-            # for point in component:
-            #     shapely.plotting.plot_points(Point(point), color="g")
-        # else:
-        #     for point in component:
-        #         shapely.plotting.plot_points(Point(point), color="r")
+            if plots:
+                for point in component:
+                    shapely.plotting.plot_points(Point(point), color="g")
+        elif plots:
+            for point in component:
+                shapely.plotting.plot_points(Point(point), color="r")
 
-    # plt.show()
+    if plots:
+        plt.show()
 
     return tiles_covered
 
