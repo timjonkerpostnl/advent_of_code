@@ -17,7 +17,7 @@ def find_min_location(source_name, source_start, source_length, maps):
     map_ranges = maps[(source_name, destination_name)]
     source_ranges = [(source_start, source_length)]
 
-    minimum_location = float('inf')
+    minimum_location = float("inf")
 
     for map_destination_start, map_source_start, map_len in map_ranges:
         map_source_end = map_source_start + map_len
@@ -27,24 +27,35 @@ def find_min_location(source_name, source_start, source_length, maps):
 
             cuts = sorted([source_start, source_end, map_source_start, map_source_end])
             for start, end in zip(cuts[:-1], cuts[1:]):
-                if start != end:    # length > 0
+                if start != end:  # length > 0
                     if source_start <= start and end <= source_end:  # inside source range
                         if map_source_start <= start and end <= map_source_end:  # inside map range
                             destination_start = map_destination_start + (start - map_source_start)
                             destination_length = end - start
-                            minimum_location = min(minimum_location, find_min_location(destination_name, destination_start, destination_length, maps))
-                        else:   # not part of this range -> try other ranges or res
+                            minimum_location = min(
+                                minimum_location,
+                                find_min_location(
+                                    destination_name,
+                                    destination_start,
+                                    destination_length,
+                                    maps,
+                                ),
+                            )
+                        else:  # not part of this range -> try other ranges or res
                             new_source_ranges.append((start, end - start))
                     else:
-                        pass    # not part of src -> part of map -> ignore
+                        pass  # not part of src -> part of map -> ignore
                 else:
-                    pass    # empty range
+                    pass  # empty range
 
         source_ranges = new_source_ranges
 
     # remaining source_ranges are mapped 1:1
     for source_start, source_length in source_ranges:
-        minimum_location = min(minimum_location, find_min_location(destination_name, source_start, source_length, maps))
+        minimum_location = min(
+            minimum_location,
+            find_min_location(destination_name, source_start, source_length, maps),
+        )
 
     return minimum_location
 
@@ -53,7 +64,7 @@ def problem2(lines):
     seeds, maps = parse(lines)
     seeds = list(zip(seeds[::2], seeds[1::2]))
 
-    minimum_location = float('inf')
+    minimum_location = float("inf")
     for seed_range_start, seed_range_length in seeds:
         num = find_min_location("seed", seed_range_start, seed_range_length, maps)
         minimum_location = min(num, minimum_location)

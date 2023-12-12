@@ -21,8 +21,9 @@ TRANSLATION = {
     "9": "9",
 }
 
+
 def find_first_and_last_digit(input_string: str):
-    pattern = re.compile(r'(?=(one|two|three|four|five|six|seven|eight|nine|\d))')
+    pattern = re.compile(r"(?=(one|two|three|four|five|six|seven|eight|nine|\d))")
 
     matches = [match.group(1) for match in pattern.finditer(input_string)]
     return TRANSLATION[matches[0]], TRANSLATION[matches[-1]]

@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 
 def is_possible_prefix(prefix: str, row: str) -> bool:
-    return all(char1 == char2 or char2 == '?' for char1, char2 in zip(prefix, row))
+    return all(char1 == char2 or char2 == "?" for char1, char2 in zip(prefix, row))
 
 
 @cache
@@ -17,16 +17,21 @@ def count_arrangements(sequence: str, sequence_lengths: tuple[int, ...]) -> int:
     if position_first_damage == -1:
         position_first_damage = 999999
     count = 0
-    for first_damage_position in range(min(len(sequence) - length_required_after_last_damage - damage_length, position_first_damage + 1)):
+    for first_damage_position in range(
+        min(
+            len(sequence) - length_required_after_last_damage - damage_length,
+            position_first_damage + 1,
+        )
+    ):
         # Each sequence consists of a few . the damage length # and a .
         # Goal is to find how many . start the sequence
-        prefix = '.' * first_damage_position + '#' * damage_length + '.'
+        prefix = "." * first_damage_position + "#" * damage_length + "."
         if is_possible_prefix(prefix, sequence):
             if len(sequence_lengths) == 1:
-                if all(char != '#' for char in sequence[len(prefix):]):
+                if all(char != "#" for char in sequence[len(prefix) :]):
                     count += 1
             else:
-                count += count_arrangements(sequence[len(prefix):], sequence_lengths[1:])
+                count += count_arrangements(sequence[len(prefix) :], sequence_lengths[1:])
     return count
 
 
@@ -46,6 +51,6 @@ def main(file_name: str) -> int:
     return summed
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     result = main("input.txt")
     print(result)

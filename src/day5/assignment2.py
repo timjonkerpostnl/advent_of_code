@@ -66,8 +66,14 @@ def process_file(file_name: str) -> int:
                 maps[map_name] = {}
             elif stripped_line != "":
                 destination_start, source_start, length = stripped_line.split(" ")
-                destination_start, source_start, length = int(destination_start), int(source_start), int(length)
-                maps[map_name][range(source_start, source_start + length)] = range(destination_start, destination_start + length)
+                destination_start, source_start, length = (
+                    int(destination_start),
+                    int(source_start),
+                    int(length),
+                )
+                maps[map_name][range(source_start, source_start + length)] = range(
+                    destination_start, destination_start + length
+                )
 
         minimum_location = find_minimum_location(maps, seeds)
 

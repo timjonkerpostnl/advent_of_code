@@ -11,7 +11,7 @@ def process_file(file_name: str) -> int:
     galaxy_positions = []
     for row_idx, row in enumerate(universe):
         for col_idx, char in enumerate(row):
-            if char == '#':
+            if char == "#":
                 galaxy_positions.append((col_idx, row_idx))
 
     for position1, position2 in combinations(galaxy_positions, 2):

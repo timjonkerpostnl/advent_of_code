@@ -17,7 +17,7 @@ def get_connections(file_name: str) -> Tuple[str, Dict[str, Dict[str, str]]]:
                 left, right = directions[1:-1].split(", ")
                 connections[node] = {
                     "L": "".join([d for d in left if d.isalpha() or d.isdigit()]),
-                    "R": "".join([d for d in right if d.isalpha() or d.isdigit()])
+                    "R": "".join([d for d in right if d.isalpha() or d.isdigit()]),
                 }
     return input_sequence, connections
 

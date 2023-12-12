@@ -13,6 +13,7 @@ def convert_hand(hand: str, translate_dict: Dict[str, int]) -> List[int]:
             int_hand.append(int(card))
     return int_hand
 
+
 def get_strength(hand: List[int]) -> int:
     count_dict = Counter(hand)
     occurences = sorted(list(count_dict.values()), reverse=True)
@@ -34,7 +35,7 @@ def get_strength(hand: List[int]) -> int:
 
 def get_overall_strength(hand: List[int]) -> tuple[int, ...]:
     strength = get_strength(hand)
-    return (strength, ) + tuple(hand)
+    return (strength,) + tuple(hand)
 
 
 def calculate_sum(card_bids):

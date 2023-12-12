@@ -19,7 +19,7 @@ def process_file(file_name: str) -> int:
     with open(file_name) as f:
         for idx, line in enumerate(f):
             stripped_line = line.strip()
-            sequences = [[int(x) for x in stripped_line.split(' ')]]
+            sequences = [[int(x) for x in stripped_line.split(" ")]]
             while not all(x == 0 for x in sequences[-1]):
                 sequences.append(get_difference_sequence(sequences[-1]))
             summed += extrapolate(sequences)

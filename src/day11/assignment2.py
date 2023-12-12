@@ -28,7 +28,7 @@ def process_file(file_name: str, distance_between_galaxies: int = 1000000) -> in
     galaxy_positions = []
     for row_idx, row in enumerate(universe):
         for col_idx, char in enumerate(row):
-            if char == '#':
+            if char == "#":
                 galaxy_positions.append((col_idx, row_idx))
 
     for position1, position2 in combinations(galaxy_positions, 2):
@@ -41,7 +41,7 @@ def process_file(file_name: str, distance_between_galaxies: int = 1000000) -> in
         distance += p_big - p_small
         for col_traversed in range(p_small, p_big):
             if col_traversed in cols_that_expand:
-                distance += (distance_between_galaxies - 1)
+                distance += distance_between_galaxies - 1
 
         if position1[1] > position2[1]:
             p_big, p_small = position1[1], position2[1]
@@ -51,7 +51,7 @@ def process_file(file_name: str, distance_between_galaxies: int = 1000000) -> in
         distance += p_big - p_small
         for row_traversed in range(p_small, p_big):
             if row_traversed in rows_that_expand:
-                distance += (distance_between_galaxies - 1)
+                distance += distance_between_galaxies - 1
 
         summed += distance
 

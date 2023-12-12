@@ -26,7 +26,7 @@ def process_file(file_name: str) -> int:
             # shapely.plotting.plot_points(point, color="g")
             tiles_covered += 1
         # else:
-            # shapely.plotting.plot_points(point, color="r")
+        # shapely.plotting.plot_points(point, color="r")
 
     # plt.show()
 

@@ -39,7 +39,9 @@ def process_file(file_name: str, plots: bool = False) -> int:
         shapely.plotting.plot_polygon(polygon, color="b")
 
     for component in tqdm(components):
-        if all(not node_on_boundary(node, (len(maze[0]), len(maze))) for node in component) and Point(next(iter(component))).within(polygon):
+        if all(not node_on_boundary(node, (len(maze[0]), len(maze))) for node in component) and Point(
+            next(iter(component))
+        ).within(polygon):
             tiles_covered += len(component)
             if plots:
                 for point in component:

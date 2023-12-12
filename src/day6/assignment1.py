@@ -11,7 +11,7 @@ def calculate_distance(race_duration: int, hold_time: int):
 
 
 def ways_to_beat_record(record: int, race_duration: int):
-    d = race_duration ** 2 - 4 * record
+    d = race_duration**2 - 4 * record
     x1 = (-race_duration + math.sqrt(d)) / -2
     x2 = (-race_duration - math.sqrt(d)) / -2
 
@@ -35,7 +35,7 @@ def process_file(file_name: str) -> int:
     with open(file_name) as f:
         for idx, line in enumerate(f):
             stripped_line = line.strip()
-            splits = stripped_line.split(':')
+            splits = stripped_line.split(":")
             if splits[0] == "Time":
                 time = read_values(splits)
             if splits[0] == "Distance":
@@ -52,7 +52,7 @@ def process_file(file_name: str) -> int:
 
 
 def read_values(splits):
-    return [int(x.strip()) for x in splits[1].split(' ') if len(x) > 0]
+    return [int(x.strip()) for x in splits[1].split(" ") if len(x) > 0]
 
 
 if __name__ == "__main__":

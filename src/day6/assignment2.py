@@ -8,11 +8,12 @@ from src.day6.assignment1 import ways_to_beat_record
 def read_values(splits):
     return int(splits[1].replace(" ", ""))
 
+
 def process_file(file_name: str) -> int:
     with open(file_name) as f:
         for idx, line in enumerate(f):
             stripped_line = line.strip()
-            splits = stripped_line.split(':')
+            splits = stripped_line.split(":")
             if splits[0] == "Time":
                 time = read_values(splits)
             if splits[0] == "Distance":
