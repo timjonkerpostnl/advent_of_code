@@ -11,6 +11,7 @@ def sequence_correct(sequence: str, sequence_lengths: tuple[int, ...]):
     return tuple(len(match.group()) for match in re.finditer(r"#+", sequence)) == sequence_lengths
 
 
+@cache
 def sequence_potentially_correct(sequence: str, sequence_lengths: tuple[int, ...]):
     if not sequence_lengths:
         return False
@@ -27,46 +28,60 @@ def sequence_potentially_correct(sequence: str, sequence_lengths: tuple[int, ...
 
 @cache
 def fill_in_character(sequence: str, sequence_lengths: tuple[int, ...]):
-    unknown_positions = [i for i, char in enumerate(sequence) if char == "?"]
-    up = unknown_positions.pop(0)
+    up_to_question = sequence.split("?", 1)[0]
+    last_dot_position = up_to_question.rfind('.')
+    if last_dot_position >= 0:
+        known_sequence = [len(match.group()) for match in re.finditer(r"#+", up_to_question[:last_dot_position + 1])]
+        sequence = sequence[last_dot_position:]
+        sequence_lengths = sequence_lengths[len(known_sequence):]
+
+    unknown_position = sequence.find("?")
 
     found_valid = 0
     new_sequences = []
-    found_damaged_sequences = [len(match.group()) for match in re.finditer(r"#+", sequence[:up])]
+    found_damaged_sequences = [len(match.group()) for match in re.finditer(r"#+", sequence[:unknown_position])]
     # remaining_sequences = sequence_lengths[len(found_damaged_sequences):]
     # required_positions = sum(remaining_sequences) + len(remaining_sequences) - 1
     if sequence_correct(sequence, sequence_lengths):
         # All damaged parts have been found rest should be . so one option from here
         found_valid += 1
-    elif up > 0 and sequence[up - 1] == "#":
+    elif unknown_position > 0 and sequence[unknown_position - 1] == "#":
         # We are in a sequence
         if (
             found_damaged_sequences == sequence_lengths
             or sequence_lengths[len(found_damaged_sequences) - 1] == found_damaged_sequences[-1]
         ):
             # Last sequence is complete, should only place a . here
-            new_sequence = replace_char_at_position(sequence, up, ".")
-            new_sequence1 = new_sequence[up + 1 :]
+            new_sequence = replace_char_at_position(sequence, unknown_position, ".")
+            new_sequence1 = new_sequence[unknown_position + 1 :]
             new_sequences.append(new_sequence1)
             up_to_question = sequence.split("?", 1)[0]
             known_sequence = [len(match.group()) for match in re.finditer(r"#+", up_to_question)]
             sequence_lengths = sequence_lengths[len(known_sequence) :]
         else:
             # Last sequence is active, should only place a # here
-            new_sequences.append(replace_char_at_position(sequence, up, "#"))
-    # elif up < len(sequence) - 1 and sequence[up + 1] == "#":
-    # We are in a sequence
-    # elif len(sequence) - up == required_positions:
+            new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
+    elif unknown_position < len(sequence) - 1 and sequence[unknown_position + 1] == "#":
+        # We are in a sequence
+        match = re.search(r'#+', sequence)
+        first_damaged_length = len(match.group())
+        if first_damaged_length >= sequence_lengths[0]:
+            new_sequences.append(replace_char_at_position(sequence, unknown_position, "."))
+        else:
+            new_sequences.append(replace_char_at_position(sequence, unknown_position, "."))
+            new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
+    # elif len(sequence) - unknown_position == required_positions:
     #     # There must be a # now because there is no room for slack left
-    #     new_sequences.append(replace_char_at_position(sequence, up, "#"))
+    #     new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
     else:
-        new_sequences.append(replace_char_at_position(sequence, up, "."))
-        new_sequences.append(replace_char_at_position(sequence, up, "#"))
+        new_sequences.append(replace_char_at_position(sequence, unknown_position, "."))
+        new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
 
     for new_sequence in new_sequences:
-        if unknown_positions and sequence_potentially_correct(new_sequence, sequence_lengths):
+        remaining_unknown_positions = new_sequence.find("?") >= 0
+        if remaining_unknown_positions and sequence_potentially_correct(new_sequence, sequence_lengths):
             found_valid += fill_in_character(new_sequence, sequence_lengths)
-        elif not unknown_positions and sequence_correct(new_sequence, sequence_lengths):
+        elif not remaining_unknown_positions and sequence_correct(new_sequence, sequence_lengths):
             found_valid += 1
 
     return found_valid
