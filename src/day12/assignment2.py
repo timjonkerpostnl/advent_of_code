@@ -8,7 +8,7 @@ from src.day12.assignment1 import replace_char_at_position
 
 
 def sequence_correct(sequence: str, sequence_lengths: tuple[int, ...]):
-    return tuple(len(match.group()) for match in re.finditer(r"#+", sequence)) == sequence_lengths
+    return known_sequences(sequence) == sequence_lengths
 
 
 @cache
@@ -18,20 +18,23 @@ def sequence_potentially_correct(sequence: str, sequence_lengths: tuple[int, ...
     up_to_question = sequence.split("?", 1)[0]
     new_string = up_to_question.rstrip("#")
     num_trailing = len(up_to_question) - len(new_string)
-    known_sequence = tuple(len(match.group()) for match in re.finditer(r"#+", new_string))
+    known_sequence = known_sequences(new_string)
     return (
         len(sequence_lengths) > len(known_sequence)
         and known_sequence == sequence_lengths[: (len(known_sequence))]
         and num_trailing <= sequence_lengths[len(known_sequence)]
     )
 
+@cache
+def known_sequences(input_str: str) -> tuple[int]:
+    return tuple(len(match.group()) for match in re.finditer(r"#+", input_str))
 
 @cache
 def fill_in_character(sequence: str, sequence_lengths: tuple[int, ...]):
     up_to_question = sequence.split("?", 1)[0]
     last_dot_position = up_to_question.rfind('.')
     if last_dot_position >= 0:
-        known_sequence = [len(match.group()) for match in re.finditer(r"#+", up_to_question[:last_dot_position + 1])]
+        known_sequence = known_sequences(up_to_question[:last_dot_position + 1])
         sequence = sequence[last_dot_position:]
         sequence_lengths = sequence_lengths[len(known_sequence):]
 
@@ -39,7 +42,7 @@ def fill_in_character(sequence: str, sequence_lengths: tuple[int, ...]):
 
     found_valid = 0
     new_sequences = []
-    found_damaged_sequences = [len(match.group()) for match in re.finditer(r"#+", sequence[:unknown_position])]
+    found_damaged_sequences = known_sequences(sequence[:unknown_position])
     # remaining_sequences = sequence_lengths[len(found_damaged_sequences):]
     # required_positions = sum(remaining_sequences) + len(remaining_sequences) - 1
     if sequence_correct(sequence, sequence_lengths):
@@ -57,7 +60,7 @@ def fill_in_character(sequence: str, sequence_lengths: tuple[int, ...]):
             new_sequences.append(new_sequence1)
             up_to_question = sequence.split("?", 1)[0]
             known_sequence = [len(match.group()) for match in re.finditer(r"#+", up_to_question)]
-            sequence_lengths = sequence_lengths[len(known_sequence) :]
+            sequence_lengths = sequence_lengths[len(known_sequence):]
         else:
             # Last sequence is active, should only place a # here
             new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
