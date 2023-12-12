@@ -31,10 +31,9 @@ def test_fill_in_character(sequence, sequence_lengths, expected):
 def test_fill_in_character_with_unfolding(sequence, sequence_lengths, expected):
     sequence = "?".join([sequence] * 5)
     sequence_lengths *= 5
-    unknown_positions = [i for i, char in enumerate(sequence) if char == '?']
     found_valid = 0
 
-    assert fill_in_character(unknown_positions, sequence, sequence_lengths, found_valid) == expected
+    assert fill_in_character(sequence, sequence_lengths, found_valid) == expected
 
 
 def test_assignment2():
