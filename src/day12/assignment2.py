@@ -23,6 +23,8 @@ def fill_in_character(unknown_positions, sequence, sequence_lengths, found_valid
     if sequence_correct(sequence, sequence_lengths):
         # All damaged parts have been found rest should be . so one option from here
         found_valid += 1
+    elif len(found_damaged_sequences) >= len(sequence_lengths):
+        pass
     elif up > 0 and sequence[up - 1] == "#":
         # We are in a sequence
         if found_damaged_sequences == sequence_lengths or sequence_lengths[len(found_damaged_sequences) - 1] == found_damaged_sequences[-1]:
