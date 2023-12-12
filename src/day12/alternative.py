@@ -1,22 +1,23 @@
-from collections.abc import Iterator
 from functools import cache
 
 from tqdm import tqdm
 
 
-def parse_input(lines: Iterator[str]) -> Iterator[tuple[str, tuple[int, ...]]]:
-    for line in lines:
-        row, groups = line.split()
-        yield row, tuple(map(int, groups.split(',')))
+def is_possible_prefix(prefix: str, row: str) -> bool:
+    return all(char1 == char2 or char2 == '?' for char1, char2 in zip(prefix, row))
 
 
 @cache
 def count_arrangements(sequence: str, sequence_lengths: tuple[int, ...]) -> int:
-    first = sequence_lengths[0]
-    rest_length = sum(sequence_lengths[1:]) + len(sequence_lengths) - 1
+    # Remove all leading . so that we start with either a # or an ?
+    sequence = sequence.lstrip(".")
+    damage_length = sequence_lengths[0]
+    length_required_after_last_damage = sum(sequence_lengths[1:]) + len(sequence_lengths) - 1
     count = 0
-    for first_position in range(len(sequence) - rest_length - first):
-        prefix = '.' * first_position + '#' * first + '.'
+    for first_damage_position in range(len(sequence) - length_required_after_last_damage - damage_length):
+        # Each sequence consists of a few . the damage length # and a .
+        # Goal is to find how many . start the sequence
+        prefix = '.' * first_damage_position + '#' * damage_length + '.'
         if is_possible_prefix(prefix, sequence):
             if len(sequence_lengths) == 1:
                 if all(char != '#' for char in sequence[len(prefix):]):
@@ -26,18 +27,15 @@ def count_arrangements(sequence: str, sequence_lengths: tuple[int, ...]) -> int:
     return count
 
 
-def is_possible_prefix(prefix: str, row: str) -> bool:
-    return all(char1 == char2 or char2 == '?' for char1, char2 in zip(prefix, row))
-
-
 def main(file_name: str) -> int:
     summed = 0
     with open(file_name) as f:
         for idx, line in tqdm(enumerate(f)):
             stripped_line = line.strip()
             sequence, sequence_lengths = stripped_line.split(" ")
-            sequence = "?".join([sequence] * 5)
-            sequence_lengths = ",".join([sequence_lengths] * 5)
+            # sequence = "?".join([sequence] * 5)
+            # sequence_lengths = ",".join([sequence_lengths] * 5)
+            # Always end the sequence with a .
             sequence += "."
             sequence_lengths = [int(x) for x in sequence_lengths.split(",")]
             summed += count_arrangements(sequence, tuple(sequence_lengths))
