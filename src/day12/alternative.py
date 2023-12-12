@@ -13,8 +13,11 @@ def count_arrangements(sequence: str, sequence_lengths: tuple[int, ...]) -> int:
     sequence = sequence.lstrip(".")
     damage_length = sequence_lengths[0]
     length_required_after_last_damage = sum(sequence_lengths[1:]) + len(sequence_lengths) - 1
+    position_first_damage = sequence.find("#")
+    if position_first_damage == -1:
+        position_first_damage = 999999
     count = 0
-    for first_damage_position in range(len(sequence) - length_required_after_last_damage - damage_length):
+    for first_damage_position in range(min(len(sequence) - length_required_after_last_damage - damage_length, position_first_damage + 1)):
         # Each sequence consists of a few . the damage length # and a .
         # Goal is to find how many . start the sequence
         prefix = '.' * first_damage_position + '#' * damage_length + '.'
@@ -33,8 +36,8 @@ def main(file_name: str) -> int:
         for idx, line in tqdm(enumerate(f)):
             stripped_line = line.strip()
             sequence, sequence_lengths = stripped_line.split(" ")
-            # sequence = "?".join([sequence] * 5)
-            # sequence_lengths = ",".join([sequence_lengths] * 5)
+            sequence = "?".join([sequence] * 5)
+            sequence_lengths = ",".join([sequence_lengths] * 5)
             # Always end the sequence with a .
             sequence += "."
             sequence_lengths = [int(x) for x in sequence_lengths.split(",")]
