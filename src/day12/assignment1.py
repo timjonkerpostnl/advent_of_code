@@ -8,19 +8,19 @@ def sequence_correct(sequence, sequence_lengths):
     return [len(match.group()) for match in re.finditer(r'#+', sequence)] == sequence_lengths
 
 
-def sequence_potentially_correct(sequence, sequence_lengths):
-    up_to_question = sequence.split("?", 1)[0]
-    new_string = up_to_question.rstrip("#")
-    known_sequence = [len(match.group()) for match in re.finditer(r'#+', new_string)]
-    return known_sequence == sequence_lengths[:(len(known_sequence))]
-
-
 def replace_char_at_position(input_string, position, new_char):
     string_list = list(input_string)
     string_list[position] = new_char
     result_string = ''.join(string_list)
 
     return result_string
+
+
+def sequence_potentially_correct(sequence, sequence_lengths):
+    up_to_question = sequence.split("?", 1)[0]
+    new_string = up_to_question.rstrip("#")
+    known_sequence = [len(match.group()) for match in re.finditer(r'#+', new_string)]
+    return known_sequence == sequence_lengths[:(len(known_sequence))]
 
 
 def fill_in_character(unknown_positions, sequence, sequence_lengths, found_valid):
