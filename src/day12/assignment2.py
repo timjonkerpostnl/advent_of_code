@@ -43,8 +43,13 @@ def fill_in_character(sequence: str, sequence_lengths: tuple[int, ...]):
     found_valid = 0
     new_sequences = []
     found_damaged_sequences = known_sequences(sequence[:unknown_position])
-    # remaining_sequences = sequence_lengths[len(found_damaged_sequences):]
-    # required_positions = sum(remaining_sequences) + len(remaining_sequences) - 1
+    remaining_sequences = sequence_lengths[len(found_damaged_sequences):]
+    required_positions = sum(remaining_sequences) + len(remaining_sequences) - 1
+
+    # match = re.search(r'[#?]\.+', sequence)
+    # first_dot_index_after_damage = match.start() + 1
+    # match = re.search(r'[?#]', sequence)
+    # first_damage = match.start()
     if sequence_correct(sequence, sequence_lengths):
         # All damaged parts have been found rest should be . so one option from here
         found_valid += 1
@@ -56,11 +61,7 @@ def fill_in_character(sequence: str, sequence_lengths: tuple[int, ...]):
         ):
             # Last sequence is complete, should only place a . here
             new_sequence = replace_char_at_position(sequence, unknown_position, ".")
-            new_sequence1 = new_sequence[unknown_position + 1 :]
-            new_sequences.append(new_sequence1)
-            up_to_question = sequence.split("?", 1)[0]
-            known_sequence = [len(match.group()) for match in re.finditer(r"#+", up_to_question)]
-            sequence_lengths = sequence_lengths[len(known_sequence):]
+            new_sequences.append(new_sequence)
         else:
             # Last sequence is active, should only place a # here
             new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
@@ -73,8 +74,11 @@ def fill_in_character(sequence: str, sequence_lengths: tuple[int, ...]):
         else:
             new_sequences.append(replace_char_at_position(sequence, unknown_position, "."))
             new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
-    # elif len(sequence) - unknown_position == required_positions:
-    #     # There must be a # now because there is no room for slack left
+    elif len(sequence) - unknown_position == required_positions:
+        # There must be a # now because there is no room for slack left
+        new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
+    # elif first_dot_index_after_damage - first_damage == sequence_lengths[0] and unknown_position <= first_dot_index_after_damage and '#' in sequence[first_damage:first_dot_index_after_damage]:
+    #     # Everything in between these positions must be a #
     #     new_sequences.append(replace_char_at_position(sequence, unknown_position, "#"))
     else:
         new_sequences.append(replace_char_at_position(sequence, unknown_position, "."))
@@ -100,6 +104,7 @@ def process_file(file_name: str) -> int:
             sequence_lengths = ",".join([sequence_lengths] * 5)
             sequence_lengths = [int(x) for x in sequence_lengths.split(",")]
 
+            sequence += "."
             found_valid_sequences = fill_in_character(sequence, tuple(sequence_lengths))
             summed += found_valid_sequences
 

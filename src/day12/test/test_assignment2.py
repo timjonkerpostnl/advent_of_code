@@ -17,10 +17,8 @@ from src.day12.assignment2 import process_file, fill_in_character
     ],
 )
 def test_fill_in_character(sequence, sequence_lengths, expected):
-    unknown_positions = [i for i, char in enumerate(sequence) if char == "?"]
-    found_valid = 0
-
-    assert fill_in_character(unknown_positions, sequence, sequence_lengths, found_valid) == expected
+    sequence += "."
+    assert fill_in_character(sequence, tuple(sequence_lengths)) == expected
 
 
 @pytest.mark.parametrize(
@@ -37,7 +35,7 @@ def test_fill_in_character(sequence, sequence_lengths, expected):
 def test_fill_in_character_with_unfolding(sequence, sequence_lengths, expected):
     sequence = "?".join([sequence] * 5)
     sequence_lengths *= 5
-
+    sequence += "."
     assert fill_in_character(sequence, tuple(sequence_lengths)) == expected
 
 
