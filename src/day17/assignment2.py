@@ -69,7 +69,7 @@ def process_file(file_name: str) -> int:
                 # We already have a path that reached the end earlier
                 continue
             if new_node == destination:
-                if new_direction_length < 4:
+                if new_direction_length < minimum_travel_length:
                     # We cannot stop
                     continue
                 # We reached the destination, save the shortest path length
@@ -77,7 +77,13 @@ def process_file(file_name: str) -> int:
             else:
                 # We reached an intermediate node, check if this node is dominated
                 previous_visit_to_node = shortest_arrivals[(new_node, new_direction)]
-                if any(new_length >= previous_visit[0] and new_direction_length == previous_visit[1] for previous_visit in previous_visit_to_node):
+                if any(
+                        new_length >= previous_visit[0] and (
+                                new_direction_length == previous_visit[1] or
+                                new_direction_length >= previous_visit[1] >= minimum_travel_length
+                        )
+                        for previous_visit in previous_visit_to_node
+                ):
                     # The new visit is dominated by a previous visit
                     continue
                 else:
