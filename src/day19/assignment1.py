@@ -4,6 +4,30 @@ import operator
 from shapely import Polygon
 from tqdm import tqdm
 
+def get_workflows(stripped_line, work_flows):
+    name, workflow_definition = stripped_line.split("{")
+    workflow_definition = workflow_definition[:-1]
+    steps = workflow_definition.split(",")
+    work_flows[name] = []
+    for step in steps:
+        if ":" in step:
+            condition, result = step.split(":")
+            if "<" in condition:
+                category, value = condition.split("<")
+                operator_str = "<"
+            elif ">" in condition:
+                category, value = condition.split(">")
+                operator_str = ">"
+            else:
+                raise NotImplemented(f"Not implemented for {condition}")
+            value = int(value)
+        else:
+            result = step
+            value = -1
+            category = "x"
+            operator_str = ">"
+        work_flows[name].append({"category": category, "operator": operator_str, "value": value, "result": result})
+
 
 def filter_condition(category: str, operator_str: str, threshold: int, item: Dict[str, int]) -> str:
     operator_mapping = {
@@ -42,28 +66,7 @@ def process_file(file_name: str) -> int:
             if stripped_line == "":
                 continue
             elif stripped_line[0] != "{":
-                name, workflow_definition = stripped_line.split("{")
-                workflow_definition = workflow_definition[:-1]
-                steps = workflow_definition.split(",")
-                work_flows[name] = []
-                for step in steps:
-                    if ":" in step:
-                        condition, result = step.split(":")
-                        if "<" in condition:
-                            category, value = condition.split("<")
-                            operator_str = "<"
-                        elif ">" in condition:
-                            category, value = condition.split(">")
-                            operator_str = ">"
-                        else:
-                            raise NotImplemented(f"Not implemented for {condition}")
-                        value = int(value)
-                    else:
-                        result = step
-                        value = -1
-                        category = "x"
-                        operator_str = ">"
-                    work_flows[name].append({"category": category, "operator": operator_str, "value": value, "result": result})
+                get_workflows(stripped_line, work_flows)
             elif stripped_line[0] == "{":
                 item_definition = stripped_line[1:].strip("}")
                 categories = item_definition.split(",")

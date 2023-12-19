@@ -4,30 +4,7 @@ import operator
 from shapely import Polygon
 from tqdm import tqdm
 
-
-def get_workflows(stripped_line, work_flows):
-    name, workflow_definition = stripped_line.split("{")
-    workflow_definition = workflow_definition[:-1]
-    steps = workflow_definition.split(",")
-    work_flows[name] = []
-    for step in steps:
-        if ":" in step:
-            condition, result = step.split(":")
-            if "<" in condition:
-                category, value = condition.split("<")
-                operator_str = "<"
-            elif ">" in condition:
-                category, value = condition.split(">")
-                operator_str = ">"
-            else:
-                raise NotImplemented(f"Not implemented for {condition}")
-            value = int(value)
-        else:
-            result = step
-            value = -1
-            category = "x"
-            operator_str = ">"
-        work_flows[name].append({"category": category, "operator": operator_str, "value": value, "result": result})
+from src.day19.assignment1 import get_workflows
 
 
 def process_file(file_name: str) -> int:
