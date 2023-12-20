@@ -3,7 +3,11 @@ from typing import List
 import numpy as np
 import pytest
 
-from src.day19.assignment1 import process_file
+from src.day20.assignment1 import process_file
 
-def test_assignment1():
-    assert process_file("input_test1.txt") == 62
+@pytest.mark.parametrize("file, expected", [
+    ("input_test1.txt", 32000000),
+    ("input_test2.txt", 11687500),
+])
+def test_assignment1(file, expected):
+    assert process_file(file) == expected
