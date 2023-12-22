@@ -68,12 +68,16 @@ def process_start_node(start_node, maze, maze_size):
     while beams:
         next_beams = []
         for beam in beams:
-            if beam[-1] in all_nodes_and_directions or beam[-1][0] >= maze_size[0] or beam[-1][0] < 0 or beam[-1][1] >= \
-                    maze_size[1] or beam[-1][1] < 0:
+            last_beam = beam[-1]
+            beam_row = last_beam[0]
+            beam_col = last_beam[1]
+            if last_beam in all_nodes_and_directions or beam_row >= maze_size[0] or beam_row < 0 or beam_col >= \
+                    maze_size[1] or beam_col < 0:
                 complete_beams.append(beam)
             else:
-                all_nodes_and_directions.add(beam[-1])
-                node = (beam[-1][0], beam[-1][1], maze[beam[-1][0]][beam[-1][1]][2])
+                all_nodes_and_directions.add(last_beam)
+                node_object = maze[beam_row][beam_col][2]
+                node = (beam_row, beam_col, node_object)
                 new_beams = process_node(maze_size, node, beam)
                 next_beams += new_beams
         beams = next_beams
