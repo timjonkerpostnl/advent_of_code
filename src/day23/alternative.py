@@ -1,3 +1,4 @@
+import datetime
 from collections import defaultdict
 from typing import List, Tuple
 
@@ -45,25 +46,47 @@ def build_junction_graph(graph, source, target):
     return junction_graph
 
 
+def calculate_upper_bound(subgraph: nx.Graph, target: Tuple[int, int]) -> int:
+    connected_component = nx.node_connected_component(subgraph, target)
+    max_weight = 0
+    for node in connected_component:
+        max_weight += max(data['weight'] for u, v, data in subgraph.edges(data=True) if u == node or v == node)
+    return max_weight
+
+
 def longest_hamiltonian_path(graph: nx.Graph, source: Tuple[int, int], target: Tuple[int, int]):
-    def dfs(current_path: List[Tuple[int, int]], longest_path):
+    longest_path_length = 0
+    shortest_paths = {
+        node: nx.shortest_path_length(graph, node, target, weight="weight")
+        for node in graph.nodes
+    }
+
+    def dfs(current_path: List[Tuple[int, int]]):
+        nonlocal longest_path_length
+        current_path_length = nx.path_weight(graph, current_path, weight='weight')
         if current_path[-1] == target:
-            if nx.path_weight(graph, current_path, weight='weight') > nx.path_weight(graph, longest_path, weight='weight'):
-                longest_path[:] = current_path[:]
+            if current_path_length > longest_path_length:
+                longest_path_length = current_path_length
+                print(longest_path_length)
             return
 
         # Continue DFS for each neighbor not in the current path
         current_node = current_path[-1]
         subgraph = nx.subgraph(graph, set(graph.nodes).difference(current_path))
-        for neighbor in graph.neighbors(current_node):
-            if neighbor not in current_path and nx.has_path(subgraph, neighbor, target):
-                dfs(current_path + [neighbor], longest_path)
+        for neighbor in sorted(graph.neighbors(current_node), key=lambda neighbor: -shortest_paths[neighbor]):
+            if (
+                    neighbor == target or
+                    (
+                        neighbor not in current_path and
+                        nx.has_path(subgraph, neighbor, target) and
+                        current_path_length + calculate_upper_bound(subgraph, target) > longest_path_length
+                    )
+            ):
+                dfs(current_path + [neighbor])
 
-    longest_path = []
+    dfs([source])
 
-    dfs([source], longest_path)
-
-    return longest_path
+    return longest_path_length
 
 
 def process_file(file_name: str) -> int:
@@ -73,8 +96,9 @@ def process_file(file_name: str) -> int:
 
     # nx.draw(junction_graph, pos={n: (n[1], 23 - n[0]) for n in graph.nodes})
     # plt.show()
-    longest_path = longest_hamiltonian_path(junction_graph, source, target)
-    longest_path_length = nx.path_weight(junction_graph, longest_path, weight='weight')
+    start = datetime.datetime.now()
+    longest_path_length = longest_hamiltonian_path(junction_graph, source, target)
+    print(f"Duration: {(datetime.datetime.now() - start).total_seconds()}")
 
     # paths = nx.all_simple_paths(junction_graph, source, target)
     # longest_path_length = max(nx.path_weight(junction_graph, path, weight='weight') for path in paths)

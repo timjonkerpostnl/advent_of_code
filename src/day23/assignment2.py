@@ -1,3 +1,4 @@
+import datetime
 from collections import defaultdict
 from typing import List, Tuple
 
@@ -48,8 +49,10 @@ def build_junction_graph(graph, source, target):
 def longest_hamiltonian_path(graph: nx.Graph, source: Tuple[int, int], target: Tuple[int, int]):
     def dfs(current_path: List[Tuple[int, int]], longest_path):
         if current_path[-1] == target:
-            if nx.path_weight(graph, current_path, weight='weight') > nx.path_weight(graph, longest_path, weight='weight'):
+            longest_path_length = nx.path_weight(graph, current_path, weight='weight')
+            if longest_path_length > nx.path_weight(graph, longest_path, weight='weight'):
                 longest_path[:] = current_path[:]
+                longest_path_length
             return
 
         # Continue DFS for each neighbor not in the current path
@@ -72,8 +75,10 @@ def process_file(file_name: str) -> int:
 
     # nx.draw(junction_graph, pos={n: (n[1], 23 - n[0]) for n in graph.nodes})
     # plt.show()
+    start = datetime.datetime.now()
     longest_path = longest_hamiltonian_path(junction_graph, source, target)
     longest_path_length = nx.path_weight(junction_graph, longest_path, weight='weight')
+    print(f"Duration: {(datetime.datetime.now() - start).total_seconds()}")
 
     # paths = nx.all_simple_paths(junction_graph, source, target)
     # longest_path_length = max(nx.path_weight(junction_graph, path, weight='weight') for path in paths)
