@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 import pytest
 
-from src.day23.assignment2 import (
+from src.day23.alternative import (
     process_file
 )
 
